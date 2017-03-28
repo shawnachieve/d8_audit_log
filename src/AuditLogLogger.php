@@ -27,16 +27,8 @@ class AuditLogLogger {
    * @param \Drupal\Core\Entity\EntityInterface $entity
    *   The entity affected during the event.
    */
-  public function log($event_type, EntityInterface $entity) {
+  public function log(AuditLogEventInterface $event) {
     ksort($this->entityEventInterpreters);
-    $client_ip = \Drupal::request()->getClientIp();
-    $account = \Drupal::service('current_user')->getAccount();
-    $event = new AuditLogEvent();
-    $event->setUser($account)
-      ->setEntity($entity)
-      ->setEventType($event_type)
-      ->setHostname(Unicode::substr($client_ip, 0, 128))
-      ->setRequestTime(REQUEST_TIME);
 
     foreach ($this->sortInterpreters() as $interpreter) {
       if ($interpreter->reactTo($event)) {

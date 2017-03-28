@@ -2,8 +2,7 @@
 
 namespace Drupal\audit_log;
 
-use Drupal\Core\Entity\EntityInterface;
-use Drupal\Core\Session\AccountInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Represents a single auditable event for logging.
@@ -11,106 +10,20 @@ use Drupal\Core\Session\AccountInterface;
  * @package Drupal\audit_log
  */
 interface AuditLogEventInterface {
-
   /**
-   * Stores the user that triggers the audit event.
+   * Creates an instance of the AuditLogEvent.
    *
-   * @param \Drupal\Core\Session\AccountInterface $user
-   *   The user object of the user performing an action to be logged.
-   *
-   * @return AuditLogEventInterface
-   *   The current instance of the object.
-   */
-  public function setUser(AccountInterface $user);
-
-  /**
-   * Stores the entity that triggered the audit event.
-   *
-   * @param \Drupal\Core\Entity\EntityInterface $entity
-   *   The entity being modified.
-   *
-   * @return AuditLogEventInterface
-   *   The current instance of the object.
-   */
-  public function setEntity(EntityInterface $entity);
-
-  /**
-   * Stores the untranslated audit message to write to the log.
-   *
-   * @param string $message
-   *   The untranslated audit message.
-   *
-   * @return AuditLogEventInterface
-   *   The current instance of the object.
-   */
-  public function setMessage($message);
-
-  /**
-   * Stores the replacement tokens for the log message.
-   *
-   * @param array $variables
-   *   The array of replacement tokens.
-   *
-   * @return AuditLogEventInterface
-   *   The current instance of the event.
-   */
-  public function setMessagePlaceholders($variables);
-
-  /**
-   * Stores the type of event being reported.
-   *
+   * @param ContainerInterface $container
+   *   The Drupal container dependency injection.
    * @param string $event_type
    *   The type of event being reported.
-   *   Example: "insert", "update", "delete".
+   * @param mixed $event_data
+   *   The object triggering the audit log.
    *
    * @return AuditLogEventInterface
-   *   The current instance of the object.
+   *   An instance of the event.
    */
-  public function setEventType($event_type);
-
-  /**
-   * Stores the original state of the object before the event occurred.
-   *
-   * @param string $state
-   *   The name of the object state such as "published" or "active".
-   *
-   * @return AuditLogEventInterface
-   *   The current instance of the object.
-   */
-  public function setPreviousState($state);
-
-  /**
-   * Stores the new state of the object after the event occurred.
-   *
-   * @param string $state
-   *   The name of the object state such as "published" or "active".
-   *
-   * @return AuditLogEventInterface
-   *   The current instance of the object.
-   */
-  public function setCurrentState($state);
-
-  /**
-   * Sets the timestamp for the event request.
-   *
-   * @param int $request_time
-   *   The timestamp of the request.
-   *
-   * @return \Drupal\audit_log\AuditLogEventInterface
-   *   The current instance of the object.
-   */
-  public function setRequestTime($request_time);
-
-  /**
-   * Stores the host IP address of the user triggering the event.
-   *
-   * @param string $hostname
-   *   The IP address of the requesting user.
-   *
-   * @return AuditLogEventInterface
-   *   The current instance of the object.
-   */
-  public function setHostname($hostname);
+  public static function create(ContainerInterface $container, $event_type, $event_data);
 
   /**
    * Retrieves the user object for the user that triggered the event.
@@ -121,12 +34,12 @@ interface AuditLogEventInterface {
   public function getUser();
 
   /**
-   * Retrieves the entity that was modified.
+   * Retrieves the object that was modified.
    *
-   * @return \Drupal\Core\Entity\EntityInterface
-   *   The entity that was modified.
+   * @return mixed
+   *   The object that was modified.
    */
-  public function getEntity();
+  public function getObject();
 
   /**
    * Retrieves the untranslated audit log message for the event.
@@ -182,5 +95,18 @@ interface AuditLogEventInterface {
    *   The IP address of the user triggering the event.
    */
   public function getHostname();
+
+  /**
+   * Sets the audit message for this event.
+   *
+   * @param string $message
+   *   The message template for the log message.
+   * @param array $variables
+   *   An array of replacement tokens for the log message.
+   *
+   * @return AuditLogEventInterface
+   *   The current instance of the event object.
+   */
+  public function setMessage($message, array $variables);
 
 }

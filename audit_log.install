@@ -18,11 +18,11 @@ function audit_log_schema() {
         'description' => 'Unique event ID.',
       ],
       'entity_id' => [
-        'type' => 'int',
-        'unsigned' => TRUE,
+        'type' => 'varchar_ascii',
+        'length' => 128,
         'not null' => TRUE,
-        'default' => 0,
-        'description' => 'The entity id of the entity that was created, modified or deleted',
+        'default' => '',
+        'description' => 'The entity id of the entity that was created, modified or deleted.',
       ],
       'entity_type' => [
         'type' => 'varchar_ascii',

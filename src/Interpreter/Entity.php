@@ -10,28 +10,23 @@ use Drupal\Core\Entity\EntityInterface;
  *
  * @package Drupal\audit_log\Interpreter
  */
-class Node implements AuditLogInterpreterInterface {
+class Entity implements AuditLogInterpreterInterface {
 
   /**
    * {@inheritdoc}
    */
   public function reactTo(AuditLogEventInterface $event) {
     $entity = $event->getObject();
-    if ($entity instanceof EntityInterface && $entity->getEntityTypeId() == 'node') {
+    if ($entity instanceof EntityInterface) {
       $event_type = $event->getEventType();
-      /** @var \Drupal\node\NodeInterface $entity */
-      $current_state = $entity->isPublished() ? 'published' : 'unpublished';
-      $previous_state = '';
-      if (isset($entity->original)) {
-        $previous_state = $entity->original->isPublished() ? 'published' : 'unpublished';
-      }
-      $message = '@event_type Node Event on @title';
+
+      $message = '@name (@type) event: @event_type';
       $args = [
-        '@title' => $entity->getTitle(),
+        '@name' => $entity->label(),
+        '@type' => $entity->getEntityTypeId(),
         '@event_type' => $event_type,
       ];
       $event->setMessage($message, $args);
-
       return TRUE;
     }
 

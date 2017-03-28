@@ -2,8 +2,9 @@
 
 namespace Drupal\audit_log;
 
-use Drupal\Core\Entity\EntityInterface;
+use Drupal\Component\Utility\Unicode;
 use Drupal\Core\Session\AccountInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Represents a single auditable event for logging.
@@ -19,11 +20,11 @@ class AuditLogEvent implements AuditLogEventInterface {
   protected $user;
 
   /**
-   * The entity being modified.
+   * The object being modified.
    *
-   * @var \Drupal\Core\Entity\EntityInterface
+   * @var mixed
    */
-  protected $entity;
+  protected $object;
 
   /**
    * The audit message to write to the log.
@@ -65,7 +66,7 @@ class AuditLogEvent implements AuditLogEventInterface {
    *
    * @var int
    */
-  protected $requestTime;
+  protected $requestTime = REQUEST_TIME;
 
   /**
    * The hostname IP address of the user triggering the event.
@@ -75,59 +76,35 @@ class AuditLogEvent implements AuditLogEventInterface {
   protected $hostname;
 
   /**
-   * {@inheritdoc}
+   * AuditLogEvent constructor.
+   *
+   * @param string $event_type
+   *   The type of event being audited.
+   * @param \Drupal\Core\Session\AccountInterface $account
+   *   The user account making the change.
+   * @param mixed $source
+   *   The object being audited.
+   * @param string $hostname
+   *   The hostname of the user making the change.
    */
-  public function setUser(AccountInterface $user) {
-    $this->user = $user;
-    return $this;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function setEntity(EntityInterface $entity) {
-    $this->entity = $entity;
-    return $this;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function setMessage($message) {
-    $this->message = $message;
-    return $this;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function setMessagePlaceholders($variables) {
-    $this->messagePlaceholders = $variables;
-    return $this;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function setEventType($event_type) {
+  protected function __construct($event_type, $account, $source, $hostname) {
     $this->eventType = $event_type;
-    return $this;
+    $this->user = $account;
+    $this->object = $source;
+    $this->hostname = $hostname;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function setPreviousState($state) {
-    $this->previousState = $state;
-    return $this;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function setCurrentState($state) {
-    $this->currentState = $state;
-    return $this;
+  public static function create(ContainerInterface $container, $event_type, $event_data) {
+    if (!\Drupal::hasContainer()) {
+      \Drupal::setContainer($container);
+    }
+    $account = \Drupal::currentUser()->getAccount();
+    $client_ip = \Drupal::request()->getClientIp();
+    $hostname = Unicode::substr($client_ip, 0, 128);
+    return new static($event_type, $account, $event_data, $hostname);
   }
 
   /**
@@ -156,8 +133,8 @@ class AuditLogEvent implements AuditLogEventInterface {
   /**
    * {@inheritdoc}
    */
-  public function getEntity() {
-    return $this->entity;
+  public function getObject() {
+    return $this->object;
   }
 
   /**
@@ -207,6 +184,14 @@ class AuditLogEvent implements AuditLogEventInterface {
    */
   public function getHostname() {
     return $this->hostname;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setMessage($message, array $variables) {
+    $this->message = $message;
+    $this->messagePlaceholders = $variables;
   }
 
 }

@@ -14,6 +14,11 @@ services:
     tags:
       - { name: audit_log_entity_event_register }
 
+  audit_log.entity_interpreter:
+    class: Drupal\audit_log\Interpreter\Entity
+    tags:
+      - { name: audit_log_entity_event_interpreter, priority: -1 }
+
   audit_log.node_interpreter:
     class: Drupal\audit_log\Interpreter\Node
     tags:
@@ -23,3 +28,8 @@ services:
     class: Drupal\audit_log\Interpreter\User
     tags:
       - { name: audit_log_entity_event_interpreter }
+
+  audit_log.config_audit:
+    class: Drupal\audit_log\EventSubscriber\ConfigAuditSubscriber
+    tags:
+      - { name: 'event_subscriber' }

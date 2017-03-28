@@ -17,11 +17,13 @@ class Database implements AuditLogRegisterInterface {
   public function save(AuditLogEventInterface $event) {
     $connection = \Drupal::database();
 
+    $entity = $event->getObject();
+
     $connection
       ->insert('audit_log')
       ->fields([
-        'entity_id' => $event->getEntity()->id(),
-        'entity_type' => $event->getEntity()->getEntityTypeId(),
+        'entity_id' => $entity->id(),
+        'entity_type' => $entity->getEntityTypeId(),
         'user_id' => $event->getUser()->id(),
         'event' => $event->getEventType(),
         'previous_state' => $event->getPreviousState(),
@@ -29,6 +31,7 @@ class Database implements AuditLogRegisterInterface {
         'message' => $event->getMessage(),
         'variables' => serialize($event->getMessagePlaceholders()),
         'timestamp' => $event->getRequestTime(),
+        'hostname' => $event->getHostname(),
       ])
       ->execute();
   }

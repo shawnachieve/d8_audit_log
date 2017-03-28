@@ -5,25 +5,29 @@
  * Contains hook implementations for the audit_log module.
  */
 
+use Drupal\audit_log\AuditLogEvent;
 use Drupal\Core\Entity\EntityInterface;
 
 /**
  * Implements hook_entity_update().
  */
 function audit_log_entity_update(EntityInterface $entity) {
-  \Drupal::service('audit_log.logger')->log('update', $entity);
+  $audit_event = AuditLogEvent::create(\Drupal::getContainer(), 'entity.update', $entity);
+  \Drupal::service('audit_log.logger')->log($audit_event);
 }
 
 /**
  * Implements hook_entity_insert().
  */
 function audit_log_entity_insert(EntityInterface $entity) {
-  \Drupal::service('audit_log.logger')->log('insert', $entity);
+  $audit_event = AuditLogEvent::create(\Drupal::getContainer(), 'entity.insert', $entity);
+  \Drupal::service('audit_log.logger')->log($audit_event);
 }
 
 /**
  * Implements hook_entity_delete().
  */
 function audit_log_entity_delete(EntityInterface $entity) {
-  \Drupal::service('audit_log.logger')->log('delete', $entity);
+  $audit_event = AuditLogEvent::create(\Drupal::getContainer(), 'entity.delete', $entity);
+  \Drupal::service('audit_log.logger')->log($audit_event);
 }
