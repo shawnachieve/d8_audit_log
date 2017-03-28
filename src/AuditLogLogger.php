@@ -2,6 +2,7 @@
 
 namespace Drupal\audit_log;
 
+use Drupal\Component\Utility\Unicode;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\audit_log\Interpreter\AuditLogInterpreterInterface;
 
@@ -28,12 +29,14 @@ class AuditLogLogger {
    */
   public function log($event_type, EntityInterface $entity) {
     ksort($this->entityEventInterpreters);
-    $event = new AuditLogEvent();
+    $client_ip = \Drupal::request()->getClientIp();
     $account = \Drupal::service('current_user')->getAccount();
-    $event->setUser($account);
-    $event->setEntity($entity);
-    $event->setEventType($event_type);
-    $event->setRequestTime(REQUEST_TIME);
+    $event = new AuditLogEvent();
+    $event->setUser($account)
+      ->setEntity($entity)
+      ->setEventType($event_type)
+      ->setHostname(Unicode::substr($client_ip, 0, 128))
+      ->setRequestTime(REQUEST_TIME);
 
     foreach ($this->sortInterpreters() as $interpreter) {
       if ($interpreter->reactTo($event)) {

@@ -102,6 +102,17 @@ interface AuditLogEventInterface {
   public function setRequestTime($request_time);
 
   /**
+   * Stores the host IP address of the user triggering the event.
+   *
+   * @param string $hostname
+   *   The IP address of the requesting user.
+   *
+   * @return AuditLogEventInterface
+   *   The current instance of the object.
+   */
+  public function setHostname($hostname);
+
+  /**
    * Retrieves the user object for the user that triggered the event.
    *
    * @return \Drupal\Core\Session\AccountInterface
@@ -163,5 +174,13 @@ interface AuditLogEventInterface {
    * @return int
    */
   public function getRequestTime();
+
+  /**
+   * Retrieves the hostname/IP address of the user triggering the event.
+   *
+   * @return string
+   *   The IP address of the user triggering the event.
+   */
+  public function getHostname();
 
 }

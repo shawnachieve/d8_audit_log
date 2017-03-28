@@ -35,7 +35,8 @@ class AuditLogEventTest extends UnitTestCase {
       ->setMessagePlaceholders(['foo' => 'bar'])
       ->setPreviousState('unpublished')
       ->setUser($account)
-      ->setRequestTime($timestamp);
+      ->setRequestTime($timestamp)
+      ->setHostname('10.1.1.25');
 
     $this->assertEquals('published', $event->getCurrentState());
     $this->assertEquals('update', $event->getEventType());
@@ -45,6 +46,7 @@ class AuditLogEventTest extends UnitTestCase {
     $this->assertEquals($account, $event->getUser());
     $this->assertEquals($entity, $event->getEntity());
     $this->assertEquals($timestamp, $event->getRequestTime());
+    $this->assertEquals('10.1.1.25', $event->getHostname());
   }
 
 }

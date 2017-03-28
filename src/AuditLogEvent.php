@@ -68,6 +68,13 @@ class AuditLogEvent implements AuditLogEventInterface {
   protected $requestTime;
 
   /**
+   * The hostname IP address of the user triggering the event.
+   *
+   * @var string
+   */
+  protected $hostname;
+
+  /**
    * {@inheritdoc}
    */
   public function setUser(AccountInterface $user) {
@@ -134,6 +141,14 @@ class AuditLogEvent implements AuditLogEventInterface {
   /**
    * {@inheritdoc}
    */
+  public function setHostname($hostname) {
+    $this->hostname = $hostname;
+    return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getUser() {
     return $this->user;
   }
@@ -185,6 +200,13 @@ class AuditLogEvent implements AuditLogEventInterface {
    */
   public function getRequestTime() {
     return $this->requestTime;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getHostname() {
+    return $this->hostname;
   }
 
 }

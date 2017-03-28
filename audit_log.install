@@ -75,6 +75,13 @@ function audit_log_schema() {
         'default' => 0,
         'description' => 'Unix timestamp of when event occurred.',
       ],
+      'hostname' => [
+        'type' => 'varchar_ascii',
+        'length' => 128,
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'Hostname of the user who triggered the event.',
+      ],
     ],
     'primary key' => ['id'],
     'indexes' => [
