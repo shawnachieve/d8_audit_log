@@ -33,6 +33,7 @@ class AuditLogLogger {
     $event->setUser($account);
     $event->setEntity($entity);
     $event->setEventType($event_type);
+    $event->setRequestTime(REQUEST_TIME);
 
     foreach ($this->sortInterpreters() as $interpreter) {
       if ($interpreter->reactTo($event)) {

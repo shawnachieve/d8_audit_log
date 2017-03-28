@@ -8,6 +8,8 @@ use Drupal\Core\Session\AccountInterface;
 use Drupal\Tests\UnitTestCase;
 
 /**
+ * Tests the AuditLogEvent class.
+ *
  * @coversDefaultClass \Drupal\audit_log\AuditLogEvent
  * @group audit_log
  */
@@ -22,6 +24,9 @@ class AuditLogEventTest extends UnitTestCase {
     /** @var \Drupal\Core\Entity\EntityInterface $entity */
     $entity = $this->getMock(EntityInterface::class);
 
+
+    $timestamp = time();
+
     $event = new AuditLogEvent();
     $event->setCurrentState('published')
       ->setEntity($entity)
@@ -29,7 +34,8 @@ class AuditLogEventTest extends UnitTestCase {
       ->setMessage('Testing the AuditLogEvent Class')
       ->setMessagePlaceholders(['foo' => 'bar'])
       ->setPreviousState('unpublished')
-      ->setUser($account);
+      ->setUser($account)
+      ->setRequestTime($timestamp);
 
     $this->assertEquals('published', $event->getCurrentState());
     $this->assertEquals('update', $event->getEventType());
@@ -38,6 +44,7 @@ class AuditLogEventTest extends UnitTestCase {
     $this->assertEquals('unpublished', $event->getPreviousState());
     $this->assertEquals($account, $event->getUser());
     $this->assertEquals($entity, $event->getEntity());
+    $this->assertEquals($timestamp, $event->getRequestTime());
   }
 
 }

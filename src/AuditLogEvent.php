@@ -61,6 +61,13 @@ class AuditLogEvent implements AuditLogEventInterface {
   protected $currentState;
 
   /**
+   * Timestamp for when the event occurred.
+   *
+   * @var int
+   */
+  protected $requestTime;
+
+  /**
    * {@inheritdoc}
    */
   public function setUser(AccountInterface $user) {
@@ -119,6 +126,14 @@ class AuditLogEvent implements AuditLogEventInterface {
   /**
    * {@inheritdoc}
    */
+  public function setRequestTime($request_time) {
+    $this->requestTime = $request_time;
+    return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getUser() {
     return $this->user;
   }
@@ -163,6 +178,13 @@ class AuditLogEvent implements AuditLogEventInterface {
    */
   public function getCurrentState() {
     return $this->currentState;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getRequestTime() {
+    return $this->requestTime;
   }
 
 }

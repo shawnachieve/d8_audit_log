@@ -91,6 +91,17 @@ interface AuditLogEventInterface {
   public function setCurrentState($state);
 
   /**
+   * Sets the timestamp for the event request.
+   *
+   * @param int $request_time
+   *   The timestamp of the request.
+   *
+   * @return \Drupal\audit_log\AuditLogEventInterface
+   *   The current instance of the object.
+   */
+  public function setRequestTime($request_time);
+
+  /**
    * Retrieves the user object for the user that triggered the event.
    *
    * @return \Drupal\Core\Session\AccountInterface
@@ -145,5 +156,12 @@ interface AuditLogEventInterface {
    *   The name of the object state such as "published" or "active".
    */
   public function getCurrentState();
+
+  /**
+   * The timestamp for when the event was initiated.
+   *
+   * @return int
+   */
+  public function getRequestTime();
 
 }
