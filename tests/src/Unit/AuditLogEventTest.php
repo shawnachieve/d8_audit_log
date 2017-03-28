@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\Tests\audit_log\Kernel;
+namespace Drupal\Tests\audit_log\Unit;
 
 use Drupal\audit_log\AuditLogEvent;
 use Drupal\Core\Entity\EntityInterface;
