@@ -1,94 +1,36 @@
 <?php
-
 /**
  * @file
- * Install, update and uninstall functions for the audit_log module.
+ * Install hooks for the audit_log module.
  */
 
 /**
- * Implements hook_schema().
+ * Implements hook_requirements().
  */
-function audit_log_schema() {
-  $schema['audit_log'] = [
-    'description' => 'Table that contains logs of all entity events.',
-    'fields' => [
-      'id' => [
-        'type' => 'serial',
-        'not null' => TRUE,
-        'description' => 'Unique event ID.',
-      ],
-      'entity_id' => [
-        'type' => 'varchar_ascii',
-        'length' => 128,
-        'not null' => TRUE,
-        'default' => '',
-        'description' => 'The entity id of the entity that was created, modified or deleted.',
-      ],
-      'entity_type' => [
-        'type' => 'varchar_ascii',
-        'length' => 128,
-        'not null' => TRUE,
-        'default' => '',
-        'description' => 'The event type, usually insert, update or delete.',
-      ],
-      'user_id' => [
-        'type' => 'int',
-        'unsigned' => TRUE,
-        'not null' => TRUE,
-        'default' => 0,
-        'description' => 'The user id of the user who triggered the event.',
-      ],
-      'event' => [
-        'type' => 'varchar_ascii',
-        'length' => 64,
-        'not null' => TRUE,
-        'default' => '',
-        'description' => 'The event type, usually insert, update or delete.',
-      ],
-      'previous_state' => [
-        'type' => 'varchar_ascii',
-        'length' => 64,
-        'default' => '',
-        'description' => 'The previous state of the entity if available',
-      ],
-      'current_state' => [
-        'type' => 'varchar_ascii',
-        'length' => 64,
-        'default' => '',
-        'description' => 'The current state of the entity if available',
-      ],
-      'message' => [
-        'type' => 'text',
-        'not null' => TRUE,
-        'size' => 'big',
-        'description' => 'Text of log message to be passed into the t() function.',
-      ],
-      'variables' => [
-        'type' => 'blob',
-        'not null' => TRUE,
-        'size' => 'big',
-        'description' => 'Serialized array of variables that match the message string and that is passed into the t() function.',
-      ],
-      'timestamp' => [
-        'type' => 'int',
-        'not null' => TRUE,
-        'default' => 0,
-        'description' => 'Unix timestamp of when event occurred.',
-      ],
-      'hostname' => [
-        'type' => 'varchar_ascii',
-        'length' => 128,
-        'not null' => TRUE,
-        'default' => '',
-        'description' => 'Hostname of the user who triggered the event.',
-      ],
-    ],
-    'primary key' => ['id'],
-    'indexes' => [
-      'user_id' => ['user_id'],
-      'entity_id' => ['entity_id'],
-    ],
-  ];
+function audit_log_requirements($phase) {
+  $requirements = [];
+  if ($phase == 'runtime') {
+    $message = t('No storage backends have been defined.  Please enable one or more storage backend modules.');
+    $severity = REQUIREMENT_ERROR;
 
-  return $schema;
+    $manager = \Drupal::service('audit_log.manager.storage');
+    $plugins = $manager->getDefinitions();
+    $enabled_plugins = implode(', ', array_keys($plugins));
+
+    if (!empty($plugins)) {
+      $enabled_plugins = implode(', ', array_keys($plugins));
+      $message = t(
+        'The following storage plugins are enabled: @plugins',
+          ['@plugins' => $enabled_plugins]
+      );
+      $severity = REQUIREMENT_OK;
+    }
+
+    $requirements['audit_log_backends'] = [
+      'title' => t('Audit Log: Storage Backends'),
+      'value' => $message,
+      'severity' => $severity,
+    ];
+  }
+  return $requirements;
 }

@@ -1,0 +1,8 @@
+type: module
+name: 'Audit Log: Database Storage'
+type: module
+description: 'Stores audit events in the Database and provides a UI for reviewing audit events.'
+package: 'Audit Log'
+core: 8.x
+dependencies:
+  - audit_log

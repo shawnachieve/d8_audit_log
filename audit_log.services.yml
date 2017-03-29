@@ -1,18 +1,12 @@
 services:
+  audit_log.manager.storage:
+    class: Drupal\audit_log\StorageManager
+    parent: default_plugin_manager
+
   audit_log.logger:
     class: Drupal\audit_log\AuditLogLogger
     tags:
       - { name: service_collector, tag: audit_log_entity_event_interpreter, call: addInterpreter }
-
-  audit_log.register:
-    class: Drupal\audit_log\AuditLogRegister
-    tags:
-      - { name: service_collector, tag: audit_log_entity_event_register, call: addRegister }
-
-  audit_log.db_register:
-    class: Drupal\audit_log\Register\Database
-    tags:
-      - { name: audit_log_entity_event_register }
 
   audit_log.entity_interpreter:
     class: Drupal\audit_log\Interpreter\Entity

@@ -29,11 +29,16 @@ class AuditLogLogger {
    */
   public function log(AuditLogEventInterface $event) {
     ksort($this->entityEventInterpreters);
-
+    /** @var \Drupal\audit_log\StorageManager $manager */
+    $manager = \Drupal::service('audit_log.manager.storage');
+    $plugins = $manager->getDefinitions();
     foreach ($this->sortInterpreters() as $interpreter) {
       if ($interpreter->reactTo($event)) {
-        \Drupal::service('audit_log.register')->register($event);
-        break;
+        foreach ($plugins as $plugin) {
+          /** @var \Drupal\audit_log\StorageBackendInterface $instance */
+          $instance = $manager->createInstance($plugin['id']);
+          $instance->save($event);
+        }
       }
     }
 

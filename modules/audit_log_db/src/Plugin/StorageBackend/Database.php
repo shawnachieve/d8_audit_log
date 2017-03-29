@@ -1,15 +1,22 @@
 <?php
 
-namespace Drupal\audit_log\Register;
+namespace Drupal\audit_log_db\Plugin\StorageBackend;
 
 use Drupal\audit_log\AuditLogEventInterface;
+use Drupal\audit_log\StorageBackendInterface;
+use Drupal\Component\Plugin\PluginBase;
 
 /**
  * Writes audit events to a custom database table.
  *
- * @package Drupal\audit_log\Register
+ * @\Drupal\audit_log\Annotation\BackendStorage(
+ *   id = "Database",
+ *   label = @\Drupal\Core\Annotation\Translation("Database Storage"),
+ * )
+ *
+ * @package Drupal\audit_log\audit_log_db\StorageBackend
  */
-class Database implements AuditLogRegisterInterface {
+class Database extends PluginBase implements StorageBackendInterface {
 
   /**
    * {@inheritdoc}
@@ -22,12 +29,11 @@ class Database implements AuditLogRegisterInterface {
     $connection
       ->insert('audit_log')
       ->fields([
-        'entity_id' => $entity->id(),
-        'entity_type' => $entity->getEntityTypeId(),
-        'user_id' => $event->getUser()->id(),
         'event' => $event->getEventType(),
-        'previous_state' => $event->getPreviousState(),
-        'current_state' => $event->getCurrentState(),
+        'object_type' => 'TBD',
+        'object_subtype' => 'TBD',
+        'object_id' => $entity->id(),
+        'user_id' => $event->getUser()->id(),
         'message' => $event->getMessage(),
         'variables' => serialize($event->getMessagePlaceholders()),
         'timestamp' => $event->getRequestTime(),
