@@ -1,28 +1,12 @@
 services:
+  audit_log.logger:
+    class: Drupal\audit_log\AuditLogLogger
   audit_log.manager.storage:
     class: Drupal\audit_log\StorageManager
     parent: default_plugin_manager
-
-  audit_log.logger:
-    class: Drupal\audit_log\AuditLogLogger
-    tags:
-      - { name: service_collector, tag: audit_log_entity_event_interpreter, call: addInterpreter }
-
-  audit_log.entity_interpreter:
-    class: Drupal\audit_log\Interpreter\Entity
-    tags:
-      - { name: audit_log_entity_event_interpreter, priority: -1 }
-
-  audit_log.node_interpreter:
-    class: Drupal\audit_log\Interpreter\Node
-    tags:
-      - { name: audit_log_entity_event_interpreter }
-
-  audit_log.entity_interpreter:
-    class: Drupal\audit_log\Interpreter\User
-    tags:
-      - { name: audit_log_entity_event_interpreter }
-
+  audit_log.manager.formatter:
+    class: Drupal\audit_log\DataFormatterManager
+    parent: default_plugin_manager
   audit_log.config_audit:
     class: Drupal\audit_log\EventSubscriber\ConfigAuditSubscriber
     tags:

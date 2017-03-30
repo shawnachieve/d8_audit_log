@@ -10,6 +10,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * @package Drupal\audit_log
  */
 interface AuditLogEventInterface {
+
   /**
    * Creates an instance of the AuditLogEvent.
    *
@@ -31,7 +32,31 @@ interface AuditLogEventInterface {
    * @return \Drupal\Core\Session\AccountInterface
    *   The user object for the user that triggered the event.
    */
-  public function getUser();
+  public function getAccount();
+
+  /**
+   * The ID of the user account triggering the audit event.
+   *
+   * @return int
+   *   The internal ID of the user account.
+   */
+  public function getAccountId();
+
+  /**
+   * The email address of the user triggering the audit event.
+   *
+   * @return string
+   *   The email of the user account.
+   */
+  public function getAccountMail();
+
+  /**
+   * The username of the user triggering the audit event.
+   *
+   * @return string
+   *   The username of the user account.
+   */
+  public function getAccountUsername();
 
   /**
    * Retrieves the object that was modified.
@@ -40,6 +65,30 @@ interface AuditLogEventInterface {
    *   The object that was modified.
    */
   public function getObject();
+
+  /**
+   * Retrieves the ID of the object being audited.
+   *
+   * @return string
+   *   The ID of the object.
+   */
+  public function getObjectId();
+
+  /**
+   * Retrieves the type of the object such as 'user' or 'node'.
+   *
+   * @return string
+   *   The object type.
+   */
+  public function getObjectType();
+
+  /**
+   * Retrieves the subtype of the object such as 'page' or 'article'.
+   *
+   * @return string
+   *   The object subtype.
+   */
+  public function getObjectSubType();
 
   /**
    * Retrieves the untranslated audit log message for the event.
@@ -97,6 +146,22 @@ interface AuditLogEventInterface {
   public function getHostname();
 
   /**
+   * Retrieves the URL of the page that triggered the audit event.
+   *
+   * @return string
+   *   URL of the request page.
+   */
+  public function getLocation();
+
+  /**
+   * Determines if the event has been processed by a formatter.
+   *
+   * @return bool
+   *   TRUE if the event has been processed and is ready for logging.
+   */
+  public function isFormattedForLogging();
+
+  /**
    * Sets the audit message for this event.
    *
    * @param string $message
@@ -104,9 +169,24 @@ interface AuditLogEventInterface {
    * @param array $variables
    *   An array of replacement tokens for the log message.
    *
-   * @return AuditLogEventInterface
+   * @return \Drupal\audit_log\AuditLogEventInterface
    *   The current instance of the event object.
    */
   public function setMessage($message, array $variables);
+
+  /**
+   * Stores information about the object being audited.
+   *
+   * @param string|int $id
+   *   The unique name or ID for the object.
+   * @param string $type
+   *   The base type for the object such as 'entity', 'node' or 'configuration'.
+   * @param string $subtype
+   *   The subtype or bundle for the object such as 'article'.
+   *
+   * @return \Drupal\audit_log\AuditLogEventInterface
+   *   The current instance of the event object.
+   */
+  public function setObjectData($id, $type, $subtype = '');
 
 }

@@ -24,20 +24,21 @@ class Database extends PluginBase implements StorageBackendInterface {
   public function save(AuditLogEventInterface $event) {
     $connection = \Drupal::database();
 
-    $entity = $event->getObject();
-
     $connection
       ->insert('audit_log')
       ->fields([
-        'event' => $event->getEventType(),
-        'object_type' => 'TBD',
-        'object_subtype' => 'TBD',
-        'object_id' => $entity->id(),
-        'user_id' => $event->getUser()->id(),
+        'event_type' => $event->getEventType(),
+        'object_type' => $event->getObjectType(),
+        'object_subtype' => $event->getObjectSubType(),
+        'object_id' => $event->getObjectId(),
+        'user_id' => $event->getAccountId(),
+        'user_name' => $event->getAccountUsername(),
+        'user_mail' => $event->getAccountMail(),
         'message' => $event->getMessage(),
         'variables' => serialize($event->getMessagePlaceholders()),
         'timestamp' => $event->getRequestTime(),
         'hostname' => $event->getHostname(),
+        'location' => $event->getLocation(),
       ])
       ->execute();
   }

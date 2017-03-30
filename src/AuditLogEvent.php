@@ -13,11 +13,32 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  */
 class AuditLogEvent implements AuditLogEventInterface {
   /**
-   * The user that triggered the audit event.
+   * The user account object that triggered the audit event.
    *
    * @var \Drupal\user\UserInterface
    */
-  protected $user;
+  protected $account;
+
+  /**
+   * The ID of the user that triggered the audit event.
+   *
+   * @var int
+   */
+  protected $accountId;
+
+  /**
+   * The username of the user that triggered the audit event.
+   *
+   * @var string
+   */
+  protected $accountUsername;
+
+  /**
+   * The email of the user that triggered the audit event.
+   *
+   * @var string
+   */
+  protected $accountMail;
 
   /**
    * The object being modified.
@@ -25,6 +46,10 @@ class AuditLogEvent implements AuditLogEventInterface {
    * @var mixed
    */
   protected $object;
+
+  protected $objectId;
+  protected $objectType;
+  protected $objectSubType;
 
   /**
    * The audit message to write to the log.
@@ -76,6 +101,13 @@ class AuditLogEvent implements AuditLogEventInterface {
   protected $hostname;
 
   /**
+   * The URL of the page generating the audit event.
+   *
+   * @var string
+   */
+  protected $location;
+
+  /**
    * AuditLogEvent constructor.
    *
    * @param string $event_type
@@ -86,12 +118,18 @@ class AuditLogEvent implements AuditLogEventInterface {
    *   The object being audited.
    * @param string $hostname
    *   The hostname of the user making the change.
+   * @param string $referrer
+   *   The URL of the page generating the event.
    */
-  protected function __construct($event_type, $account, $source, $hostname) {
+  protected function __construct($event_type, AccountInterface $account, $source, $hostname, $referrer) {
     $this->eventType = $event_type;
-    $this->user = $account;
+    $this->account = $account;
+    $this->accountUsername = $account->getAccountName();
+    $this->accountMail = $account->getEmail();
+    $this->accountId = $account->id();
     $this->object = $source;
     $this->hostname = $hostname;
+    $this->location = $referrer;
   }
 
   /**
@@ -104,30 +142,36 @@ class AuditLogEvent implements AuditLogEventInterface {
     $account = \Drupal::currentUser()->getAccount();
     $client_ip = \Drupal::request()->getClientIp();
     $hostname = Unicode::substr($client_ip, 0, 128);
-    return new static($event_type, $account, $event_data, $hostname);
+    $referrer = \Drupal::request()->getUri();
+    return new static($event_type, $account, $event_data, $hostname, $referrer);
   }
 
   /**
    * {@inheritdoc}
    */
-  public function setRequestTime($request_time) {
-    $this->requestTime = $request_time;
-    return $this;
+  public function getAccount() {
+    return $this->account;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function setHostname($hostname) {
-    $this->hostname = $hostname;
-    return $this;
+  public function getAccountId() {
+    return $this->accountId;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getUser() {
-    return $this->user;
+  public function getAccountMail() {
+    return $this->accountMail;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getAccountUsername() {
+    return $this->accountUsername;
   }
 
   /**
@@ -135,6 +179,27 @@ class AuditLogEvent implements AuditLogEventInterface {
    */
   public function getObject() {
     return $this->object;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getObjectId() {
+    return $this->objectId;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getObjectType() {
+    return $this->objectType;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getObjectSubType() {
+    return $this->objectSubType;
   }
 
   /**
@@ -189,9 +254,38 @@ class AuditLogEvent implements AuditLogEventInterface {
   /**
    * {@inheritdoc}
    */
+  public function getLocation() {
+    return $this->location;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function isFormattedForLogging() {
+    $formatted = (
+      !empty($this->objectId) &&
+      !empty($this->objectType) &&
+      !empty($this->message)
+    );
+
+    return $formatted;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function setMessage($message, array $variables) {
     $this->message = $message;
     $this->messagePlaceholders = $variables;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setObjectData($id, $type, $subtype = '') {
+    $this->objectId = $id;
+    $this->objectType = $type;
+    $this->objectSubType = $subtype;
   }
 
 }

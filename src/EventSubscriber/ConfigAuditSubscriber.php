@@ -10,39 +10,35 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Drupal\Core\Config\ConfigCrudEvent;
 
 /**
- * Class description.
+ * Responds to configuration change events.
  */
-class ConfigAuditSubscriber implements EventSubscriberInterface  {
+class ConfigAuditSubscriber implements EventSubscriberInterface {
 
   /**
    * {@inheritdoc}
    */
   public static function getSubscribedEvents() {
-//    $events = [
-//      ConfigEvents::DELETE => ['onDelete'],
-//      ConfigEvents::IMPORT => ['onImport'],
-//      ConfigEvents::IMPORT_MISSING_CONTENT => ['onImportMissing'],
-//      ConfigEvents::IMPORT_VALIDATE => ['onImportValidate'],
-//      ConfigEvents::COLLECTION_INFO => ['onCollectionInfo'],
-//      ConfigEvents::RENAME => ['onRename'],
-//      ConfigEvents::SAVE => ['onSave'],
-//    ];
     $events = [
-      ConfigEvents::DELETE => ['onEventTrack'],
+      ConfigEvents::DELETE => ['onConfigCrud'],
       ConfigEvents::IMPORT => ['onConfigImport'],
       ConfigEvents::IMPORT_MISSING_CONTENT => ['onConfigImport'],
       ConfigEvents::IMPORT_VALIDATE => ['onConfigImport'],
       ConfigEvents::COLLECTION_INFO => ['onCollectionInfo'],
-      ConfigEvents::RENAME => ['onEventTrack'],
-      ConfigEvents::SAVE => ['onEventTrack'],
+      ConfigEvents::RENAME => ['onConfigCrud'],
+      ConfigEvents::SAVE => ['onConfigCrud'],
     ];
     return $events;
   }
 
   /**
+   * Responds to ConfigCrudEvents.
+   *
    * @param \Drupal\Core\Config\ConfigCrudEvent $event
+   *   The configuration CRUD event.
+   * @param string $event_name
+   *   The name of the event.
    */
-  public function onEventTrack(ConfigCrudEvent $event, $event_name) {
+  public function onConfigCrud(ConfigCrudEvent $event, $event_name) {
     $args = func_get_args();
     $config = $event->getConfig();
     $orig_data = $config->getOriginal();
@@ -50,13 +46,17 @@ class ConfigAuditSubscriber implements EventSubscriberInterface  {
     $config_name = $config->getName();
     drupal_set_message("$event_name : Config changed: " . $config_name);
 
-    $audit_event = AuditLogEvent::create(\Drupal::getContainer(), $event_name, $event);
+    $audit_event = AuditLogEvent::create(\Drupal::getContainer(), $event_name, $config);
     \Drupal::service('audit_log.logger')->log($audit_event);
   }
 
   /**
+   * Responds to Configuration Import Events.
+   *
    * @param \Drupal\Core\Config\ConfigImporterEvent $event
-   * @param $event_name
+   *   The configuration import event.
+   * @param string $event_name
+   *   The name of the event.
    */
   public function onConfigImport(ConfigImporterEvent $event, $event_name) {
     $args = func_get_args();
@@ -65,10 +65,19 @@ class ConfigAuditSubscriber implements EventSubscriberInterface  {
     \Drupal::service('audit_log.logger')->log($audit_event);
   }
 
+  /**
+   * Responds to Configuration Collection Events.
+   *
+   * @param \Drupal\Core\Config\ConfigCollectionInfo $event
+   *   The Configuration Collection event.
+   * @param string $event_name
+   *   The name of the event.
+   */
   public function onCollectionInfo(ConfigCollectionInfo $event, $event_name) {
     $args = func_get_args();
     drupal_set_message("$event_name : Config import-Collection Info: ");
     $audit_event = AuditLogEvent::create(\Drupal::getContainer(), $event_name, $event);
     \Drupal::service('audit_log.logger')->log($audit_event);
   }
+
 }

@@ -17,7 +17,7 @@ function audit_log_db_schema() {
         'not null' => TRUE,
         'description' => 'Unique event ID.',
       ],
-      'event' => [
+      'event_type' => [
         'type' => 'varchar_ascii',
         'length' => 64,
         'not null' => TRUE,
@@ -52,6 +52,16 @@ function audit_log_db_schema() {
         'default' => 0,
         'description' => 'The user id of the user who triggered the event.',
       ],
+      'user_name' => [
+        'type' => 'text',
+        'not null' => TRUE,
+        'description' => 'The username of the user who triggered the event.',
+      ],
+      'user_mail' => [
+        'type' => 'text',
+        'not null' => FALSE,
+        'description' => 'The email of the user who triggered the event.',
+      ],
       'message' => [
         'type' => 'text',
         'not null' => TRUE,
@@ -76,6 +86,11 @@ function audit_log_db_schema() {
         'not null' => TRUE,
         'default' => '',
         'description' => 'Hostname of the user who triggered the event.',
+      ],
+      'location' => [
+        'type' => 'text',
+        'not null' => FALSE,
+        'description' => 'URL of the origin of the event.',
       ],
     ],
     'primary key' => ['id'],

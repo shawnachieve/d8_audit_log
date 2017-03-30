@@ -2,79 +2,57 @@
 
 namespace Drupal\audit_log;
 
-use Drupal\Component\Utility\Unicode;
-use Drupal\Core\Entity\EntityInterface;
-use Drupal\audit_log\Interpreter\AuditLogInterpreterInterface;
-
 /**
  * Service for responding to audit log events.
  *
  * @package Drupal\audit_log
  */
 class AuditLogLogger {
-  /**
-   * An array of available interpreters to respond to events.
-   *
-   * @var array
-   */
-  protected $entityEventInterpreters;
 
   /**
    * Logs an event to the audit log.
    *
-   * @param string $event_type
-   *   The type of event being reported such as "insert", "update", or "delete".
-   * @param \Drupal\Core\Entity\EntityInterface $entity
-   *   The entity affected during the event.
+   * @param AuditLogEventInterface $event
+   *   The event to be written to the audit log.
    */
   public function log(AuditLogEventInterface $event) {
-    ksort($this->entityEventInterpreters);
+    $this->formatData($event);
+    if ($event->isFormattedForLogging()) {
+      $this->writeLog($event);
+    }
+  }
+
+  /**
+   * Adds object specific data to the event object.
+   *
+   * @param \Drupal\audit_log\AuditLogEventInterface $event
+   *   The audit event data.
+   */
+  protected function formatData(AuditLogEventInterface $event) {
+    /** @var \Drupal\audit_log\DataFormatterManager $manager */
+    $manager = \Drupal::service('audit_log.manager.formatter');
+    /** @var \Drupal\audit_log\Plugin\DataFormatter\DataFormatterInterface $plugin */
+    $plugin = $manager->getPluginForType($event->getObject());
+    if ($plugin) {
+      $plugin->format($event);
+    }
+  }
+
+  /**
+   * Writes the event to all available logging storage backends.
+   *
+   * @param \Drupal\audit_log\AuditLogEventInterface $event
+   *   The audit event data.
+   */
+  protected function writeLog(AuditLogEventInterface $event) {
     /** @var \Drupal\audit_log\StorageManager $manager */
     $manager = \Drupal::service('audit_log.manager.storage');
     $plugins = $manager->getDefinitions();
-    foreach ($this->sortInterpreters() as $interpreter) {
-      if ($interpreter->reactTo($event)) {
-        foreach ($plugins as $plugin) {
-          /** @var \Drupal\audit_log\StorageBackendInterface $instance */
-          $instance = $manager->createInstance($plugin['id']);
-          $instance->save($event);
-        }
-      }
+    foreach ($plugins as $plugin) {
+      /** @var \Drupal\audit_log\StorageBackendInterface $instance */
+      $instance = $manager->createInstance($plugin['id']);
+      $instance->save($event);
     }
-
-  }
-
-  /**
-   * Adds an interpreter to the processing pipeline.
-   *
-   * @param \Drupal\audit_log\Interpreter\AuditLogInterpreterInterface $interpreter
-   *   An audit log event interpreter.
-   * @param int $priority
-   *   A priority specification for the interpreter.
-   *
-   *   Must be a positive integer.
-   *
-   *   Lower number interpreters are processed
-   *   before higher number interpreters.
-   */
-  public function addInterpreter(AuditLogInterpreterInterface $interpreter, $priority = 0) {
-    $this->entityEventInterpreters[$priority][] = $interpreter;
-  }
-
-  /**
-   * Sorts the available interpreters by priority.
-   *
-   * @return array
-   *   The sorted array of interpreters.
-   */
-  protected function sortInterpreters() {
-    $sorted = [];
-    krsort($this->entityEventInterpreters);
-
-    foreach ($this->entityEventInterpreters as $entity_event_interpreters) {
-      $sorted = array_merge($sorted, $entity_event_interpreters);
-    }
-    return $sorted;
   }
 
 }
