@@ -1,0 +1,3 @@
+access audit_log report:
+  title: 'Access Audit Log Report'
+  restrict access: TRUE

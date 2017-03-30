@@ -31,6 +31,7 @@ class ConfigBase implements DataFormatterInterface {
     $new_data = $config->getRawData();
 
     $subtype = '';
+    $diff = '';
     switch ($config->getName()) {
       case 'core.extension':
         $diff = array_diff_assoc($orig_data['module'], $new_data['module']);
@@ -47,7 +48,9 @@ class ConfigBase implements DataFormatterInterface {
         break;
 
       default:
-        $diff = array_diff_assoc($orig_data, $new_data);
+        if (is_array($orig_data) && is_array($new_data)) {
+//          $diff = array_diff_assoc($orig_data, $new_data);
+        }
     }
 
     // TODO: Need separate formatters based on the config object.
