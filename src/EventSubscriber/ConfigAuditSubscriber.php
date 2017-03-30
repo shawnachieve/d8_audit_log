@@ -2,7 +2,7 @@
 
 namespace Drupal\audit_log\EventSubscriber;
 
-use Drupal\audit_log\AuditLogEvent;
+use Drupal\audit_log\Event\AuditLogEvent;
 use Drupal\Core\Config\ConfigCollectionInfo;
 use Drupal\Core\Config\ConfigEvents;
 use Drupal\Core\Config\ConfigImporterEvent;

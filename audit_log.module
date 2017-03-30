@@ -5,7 +5,7 @@
  * Contains hook implementations for the audit_log module.
  */
 
-use Drupal\audit_log\AuditLogEvent;
+use Drupal\audit_log\Event\AuditLogEvent;
 use Drupal\Core\Entity\EntityInterface;
 
 /**

@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\audit_log;
+namespace Drupal\audit_log\Event;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
 

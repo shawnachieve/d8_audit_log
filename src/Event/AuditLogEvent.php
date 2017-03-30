@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\audit_log;
+namespace Drupal\audit_log\Event;
 
 use Drupal\Component\Utility\Unicode;
 use Drupal\Core\Session\AccountInterface;

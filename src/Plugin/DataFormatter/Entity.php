@@ -2,9 +2,8 @@
 
 namespace Drupal\audit_log\Plugin\DataFormatter;
 
-use Drupal\audit_log\AuditLogEventInterface;
+use Drupal\audit_log\Event\AuditLogEventInterface;
 use Drupal\Core\Entity\EntityInterface;
-
 
 /**
  * Generic formatter for handling any kind of entity logging.

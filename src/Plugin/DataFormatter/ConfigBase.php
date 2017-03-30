@@ -2,9 +2,8 @@
 
 namespace Drupal\audit_log\Plugin\DataFormatter;
 
-use Drupal\audit_log\AuditLogEventInterface;
+use Drupal\audit_log\Event\AuditLogEventInterface;
 use Drupal\Core\Config\Config;
-
 
 /**
  * Generic formatter for handling any kind of entity logging.
@@ -42,4 +41,5 @@ class ConfigBase implements DataFormatterInterface {
     $event->setMessage($message, $args);
     $event->setObjectData($id, $type, $subtype);
   }
+
 }

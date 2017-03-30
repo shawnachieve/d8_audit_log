@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\audit_log;
+namespace Drupal\audit_log\Plugin;
 
 use Drupal\Component\Plugin\Factory\DefaultFactory;
 use Drupal\Core\Cache\CacheBackendInterface;

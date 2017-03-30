@@ -2,10 +2,10 @@ services:
   audit_log.logger:
     class: Drupal\audit_log\AuditLogLogger
   audit_log.manager.storage:
-    class: Drupal\audit_log\StorageManager
+    class: Drupal\audit_log\Plugin\StorageManager
     parent: default_plugin_manager
   audit_log.manager.formatter:
-    class: Drupal\audit_log\DataFormatterManager
+    class: Drupal\audit_log\Plugin\DataFormatterManager
     parent: default_plugin_manager
   audit_log.config_audit:
     class: Drupal\audit_log\EventSubscriber\ConfigAuditSubscriber

@@ -1,6 +1,8 @@
 <?php
 
-namespace Drupal\audit_log;
+namespace Drupal\audit_log\Plugin\StorageBackend;
+
+use Drupal\audit_log\Event\AuditLogEventInterface;
 
 /**
  * Defines a Storage Backend for the audit log module.
