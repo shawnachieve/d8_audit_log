@@ -40,9 +40,6 @@ class ConfigAuditSubscriber implements EventSubscriberInterface {
    */
   public function onConfigCrud(ConfigCrudEvent $event, $event_name) {
     $config = $event->getConfig();
-    $config_name = $config->getName();
-    drupal_set_message("$event_name : Config changed: " . $config_name);
-
     $audit_event = AuditLogEvent::create(\Drupal::getContainer(), $event_name, $config);
     \Drupal::service('audit_log.logger')->log($audit_event);
   }

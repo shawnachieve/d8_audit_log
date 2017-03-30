@@ -27,6 +27,20 @@ interface AuditLogEventInterface {
   public static function create(ContainerInterface $container, $event_type, $event_data);
 
   /**
+   * Flag this event as not-logged.
+   */
+  public function abortLogging();
+
+  /**
+   * Indicates if this event can be logged or not.
+   *
+   * @return bool
+   *   TRUE if the event should be written to the log.
+   *   FALSE if the event should not be written to the log.
+   */
+  public function isLoggable();
+
+  /**
    * Retrieves the user object for the user that triggered the event.
    *
    * @return \Drupal\Core\Session\AccountInterface
@@ -152,6 +166,14 @@ interface AuditLogEventInterface {
    *   URL of the request page.
    */
   public function getLocation();
+
+  /**
+   * Indicates if the event was triggered from drush or another CLI tool.
+   *
+   * @return bool
+   *   TRUE if the event was triggered by a CLI command.  Otherwise FALSE.
+   */
+  public function isCliSource();
 
   /**
    * Determines if the event has been processed by a formatter.

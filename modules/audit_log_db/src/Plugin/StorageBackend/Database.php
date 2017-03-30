@@ -5,6 +5,7 @@ namespace Drupal\audit_log_db\Plugin\StorageBackend;
 use Drupal\audit_log\Event\AuditLogEventInterface;
 use Drupal\audit_log\Plugin\StorageBackend\StorageBackendInterface;
 use Drupal\Component\Plugin\PluginBase;
+use PDOException;
 
 /**
  * Writes audit events to a custom database table.

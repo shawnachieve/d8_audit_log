@@ -4,6 +4,7 @@ dependencies:
   config:
     - system.menu.admin
   module:
+    - audit_log_db
     - user
 id: audit_log_report
 label: 'Audit Log Report'
@@ -25,14 +26,14 @@ display:
         options:
           perm: 'access audit_log report'
       cache:
-        type: tag
+        type: none
         options: {  }
       query:
         type: views_query
         options:
           disable_sql_rewrite: false
           distinct: false
-          replica: false
+          replica: true
           query_comment: ''
           query_tags: {  }
       exposed_form:
@@ -68,20 +69,78 @@ display:
           quantity: 9
       style:
         type: table
+        options:
+          grouping: {  }
+          row_class: 'event-type--{{ event_type }} object-type--{{ object_type }} object-subtype--{{ object_subtype }}'
+          default_row_class: true
+          override: true
+          sticky: false
+          caption: 'List of tracked audit events.'
+          summary: 'List of tracked audit events.'
+          description: 'A listing of tracked audit event providing information about what event occurred, who did it, and when it occurred.'
+          columns:
+            timestamp: timestamp
+            event_type: event_type
+            object_type: object_type
+            object_subtype: object_subtype
+            message: message
+            user_name: user_name
+          info:
+            timestamp:
+              sortable: false
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            event_type:
+              sortable: false
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            object_type:
+              sortable: false
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            object_subtype:
+              sortable: false
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            message:
+              sortable: false
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            user_name:
+              sortable: false
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+          default: '-1'
+          empty_table: false
       row:
         type: fields
       fields:
-        id:
+        timestamp:
+          id: timestamp
           table: audit_log
-          field: id
-          id: id
-          entity_type: null
-          entity_field: null
-          plugin_id: numeric
+          field: timestamp
           relationship: none
           group_type: group
           admin_label: ''
-          label: ID
+          label: Timestamp
           exclude: false
           alter:
             alter_text: false
@@ -122,14 +181,10 @@ display:
           hide_empty: false
           empty_zero: false
           hide_alter_empty: true
-          set_precision: false
-          precision: 0
-          decimal: .
-          separator: ','
-          format_plural: false
-          format_plural_string: "1\x03@count"
-          prefix: ''
-          suffix: ''
+          date_format: short
+          custom_date_format: ''
+          timezone: ''
+          plugin_id: date
         event_type:
           id: event_type
           table: audit_log
@@ -138,161 +193,6 @@ display:
           group_type: group
           admin_label: ''
           label: 'Event Type'
-          exclude: false
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: true
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-          plugin_id: standard
-        hostname:
-          id: hostname
-          table: audit_log
-          field: hostname
-          relationship: none
-          group_type: group
-          admin_label: ''
-          label: Hostname
-          exclude: false
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: true
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-          plugin_id: standard
-        object_id:
-          id: object_id
-          table: audit_log
-          field: object_id
-          relationship: none
-          group_type: group
-          admin_label: ''
-          label: 'Object ID'
-          exclude: false
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: true
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-          set_precision: false
-          precision: 0
-          decimal: .
-          separator: ','
-          format_plural: false
-          format_plural_string: "1\x03@count"
-          prefix: ''
-          suffix: ''
-          plugin_id: numeric
-        object_subtype:
-          id: object_subtype
-          table: audit_log
-          field: object_subtype
-          relationship: none
-          group_type: group
-          admin_label: ''
-          label: 'Object SubType'
           exclude: false
           alter:
             alter_text: false
@@ -383,14 +283,14 @@ display:
           empty_zero: false
           hide_alter_empty: true
           plugin_id: standard
-        timestamp:
-          id: timestamp
+        object_subtype:
+          id: object_subtype
           table: audit_log
-          field: timestamp
+          field: object_subtype
           relationship: none
           group_type: group
           admin_label: ''
-          label: Timestamp
+          label: 'Object SubType'
           exclude: false
           alter:
             alter_text: false
@@ -431,10 +331,114 @@ display:
           hide_empty: false
           empty_zero: false
           hide_alter_empty: true
-          date_format: html_datetime
-          custom_date_format: ''
-          timezone: ''
-          plugin_id: date
+          plugin_id: standard
+        message:
+          id: message
+          table: audit_log
+          field: message
+          relationship: none
+          group_type: group
+          admin_label: ''
+          label: Message
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 60
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: true
+            trim: true
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          replace_variables: 1
+          plugin_id: standard
+        user_id:
+          id: user_id
+          table: audit_log
+          field: user_id
+          relationship: none
+          group_type: group
+          admin_label: ''
+          label: ''
+          exclude: true
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: false
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          set_precision: false
+          precision: 0
+          decimal: .
+          separator: ''
+          format_plural: false
+          format_plural_string: "1\x03@count"
+          prefix: ''
+          suffix: ''
+          plugin_id: numeric
         user_name:
           id: user_name
           table: audit_log
@@ -442,13 +446,13 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
-          label: 'User: Name'
+          label: User
           exclude: false
           alter:
             alter_text: false
             text: ''
-            make_link: false
-            path: ''
+            make_link: true
+            path: 'user/{{ user_id }}'
             absolute: false
             external: false
             replace_spaces: false
@@ -502,10 +506,33 @@ display:
       title: 'Audit Log Report'
       header: {  }
       footer: {  }
-      empty: {  }
-      relationships: {  }
+      empty:
+        area:
+          id: area
+          table: views
+          field: area
+          relationship: none
+          group_type: group
+          admin_label: ''
+          empty: true
+          tokenize: false
+          content:
+            value: 'No tracked events have been recorded.'
+            format: basic_html
+          plugin_id: text
+      relationships:
+        user_id:
+          id: user_id
+          table: audit_log
+          field: user_id
+          relationship: none
+          group_type: group
+          admin_label: uid
+          required: false
+          plugin_id: standard
       arguments: {  }
       display_extenders: {  }
+      show_admin_links: false
     cache_metadata:
       max-age: 0
       contexts:
@@ -524,7 +551,7 @@ display:
       menu:
         type: normal
         title: 'Audit Log Report'
-        description: ''
+        description: 'Provides a listing of audit log events.'
         expanded: false
         parent: system.admin_reports
         weight: 0

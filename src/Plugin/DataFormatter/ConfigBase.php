@@ -26,39 +26,74 @@ class ConfigBase implements DataFormatterInterface {
       throw new \InvalidArgumentException("Event object must be an instance of Config.");
     }
 
-    $event_type = $event->getEventType();
-    $orig_data = $config->getOriginal();
-    $new_data = $config->getRawData();
-
-    $subtype = '';
-    $diff = '';
     switch ($config->getName()) {
       case 'core.extension':
-        $diff = array_diff_assoc($orig_data['module'], $new_data['module']);
-        $subtype = 'module.install';
-        if (stripos($event->getLocation(), '/admin/modules/uninstall/confirm') !== FALSE) {
-          $subtype = 'module.uninstall';
-        }
-        elseif (stripos($event->getLocation(), '/drush') !== FALSE) {
-          if (stripos($event->getLocation(), ' pm-uninstall ') !== FALSE
-            || stripos($event->getLocation(), ' pmu ') !== FALSE) {
-            $subtype = 'module.uninstall';
-          }
-        }
+        $this->processExtensionChange($event, $config);
         break;
 
       default:
-        if (is_array($orig_data) && is_array($new_data)) {
-//          $diff = array_diff_assoc($orig_data, $new_data);
-        }
+        $message = 'Configuration changed: @name';
+        $args = [
+          '@name' => $config->getName(),
+        ];
+
+        $id = $config->getName();
+        $type = $config->getName();
+
+        $event->setMessage($message, $args);
+        $event->setObjectData($id, $type, '');
     }
 
-    // TODO: Need separate formatters based on the config object.
-    $message = 'Config (@name) event: @event_type changes: @diff';
+
+  }
+
+  /**
+   * Handles changes to modules and themes.
+   *
+   * @param \Drupal\audit_log\Event\AuditLogEventInterface $event
+   *   The audit event being processed.
+   * @param \Drupal\Core\Config\Config $config
+   *   The configuration object being audited.
+   */
+  protected function processExtensionChange(AuditLogEventInterface $event, Config $config) {
+    $orig_data = $config->getOriginal();
+    $new_data = $config->getRawData();
+
+    $module_change = count(count($new_data['module'] - $orig_data['module']));
+    $theme_change = count(count($new_data['theme'] - $orig_data['theme']));
+
+    if ($module_change < 0) {
+      $subtype = 'module.uninstall';
+      $diff = array_diff_assoc($new_data['module'], $orig_data['module']);
+
+      // We need to disable logging when we are uninstalling the
+      // audit_log_db submodule.  Otherwise we end up with DB Exceptions due
+      // to the table not existing.
+      if (array_key_exists('audit_log_db', $diff)) {
+        $event->abortLogging();
+      }
+    }
+    elseif ($module_change > 0) {
+      $subtype = 'module.install';
+      $diff = array_diff_assoc($orig_data['module'], $new_data['module']);
+    }
+    elseif ($theme_change < 0) {
+      $subtype = 'theme.uninstall';
+      $diff = array_diff_assoc($orig_data['theme'], $new_data['theme']);
+    }
+    elseif ($theme_change > 0) {
+      $subtype = 'theme.install';
+      $diff = array_diff_assoc($new_data['theme'], $orig_data['theme']);
+    }
+    else {
+      $subtype = 'unknown';
+      $diff = [];
+    }
+
+    $message = '@subtype : @diff';
     $args = [
-      '@name' => $config->getName(),
-      '@event_type' => $event_type,
-      '@diff' => print_r($diff, TRUE),
+      '@subtype' => $subtype,
+      '@diff' => implode(', ', array_keys($diff)),
     ];
 
     $id = $config->getName();

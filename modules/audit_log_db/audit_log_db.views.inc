@@ -162,7 +162,7 @@ function audit_log_db_views_data() {
     'title' => t('Message'),
     'help' => t('The actual message of the log entry.'),
     'field' => [
-      'id' => 'standard',
+      'id' => 'audit_log_db_message',
     ],
     'argument' => [
       'id' => 'string',

@@ -19,7 +19,7 @@ class AuditLogLogger {
    */
   public function log(AuditLogEventInterface $event) {
     $this->formatData($event);
-    if ($event->isFormattedForLogging()) {
+    if ($event->isLoggable() && $event->isFormattedForLogging()) {
       $this->writeLog($event);
     }
   }

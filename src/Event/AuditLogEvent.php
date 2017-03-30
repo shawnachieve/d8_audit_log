@@ -108,6 +108,20 @@ class AuditLogEvent implements AuditLogEventInterface {
   protected $location;
 
   /**
+   * Indicates if the event was triggered by a CLI action.
+   *
+   * @var bool
+   */
+  protected $cli;
+
+  /**
+   * Indicates if the event can be written to the log.
+   *
+   * @var bool
+   */
+  protected $loggable = TRUE;
+
+  /**
    * AuditLogEvent constructor.
    *
    * @param string $event_type
@@ -121,7 +135,7 @@ class AuditLogEvent implements AuditLogEventInterface {
    * @param string $location
    *   The URL of the page generating the event.
    */
-  protected function __construct($event_type, AccountInterface $account, $source, $hostname, $location) {
+  protected function __construct($event_type, AccountInterface $account, $source, $hostname, $location, $cli = FALSE) {
     $this->eventType = $event_type;
     $this->account = $account;
     $this->accountUsername = $account->getAccountName();
@@ -130,6 +144,7 @@ class AuditLogEvent implements AuditLogEventInterface {
     $this->object = $source;
     $this->hostname = $hostname;
     $this->location = $location;
+    $this->cli = $cli;
   }
 
   /**
@@ -142,8 +157,10 @@ class AuditLogEvent implements AuditLogEventInterface {
     $account = \Drupal::currentUser()->getAccount();
     $client_ip = \Drupal::request()->getClientIp();
     $hostname = Unicode::substr($client_ip, 0, 128);
-    $is_drush_request = (php_sapi_name() == 'cli');
-    if ($is_drush_request && isset($GLOBALS['argv'])) {
+
+    // See if the event was triggered via the CLI rather than HTTP.
+    $cli = (php_sapi_name() == 'cli');
+    if ($cli && isset($GLOBALS['argv'])) {
       $drush_args = $GLOBALS['argv'];
       $location = implode(' ', $drush_args);
       if (isset($_SERVER['USER'])) {
@@ -154,7 +171,14 @@ class AuditLogEvent implements AuditLogEventInterface {
     else {
       $location = \Drupal::request()->getUri();
     }
-    return new static($event_type, $account, $event_data, $hostname, $location);
+    return new static($event_type, $account, $event_data, $hostname, $location, $cli);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function abortLogging() {
+    $this->loggable = FALSE;
   }
 
   /**
@@ -267,6 +291,20 @@ class AuditLogEvent implements AuditLogEventInterface {
    */
   public function getLocation() {
     return $this->location;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function isCliSource() {
+    return $this->cli;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function isLoggable() {
+    return $this->loggable;
   }
 
   /**
