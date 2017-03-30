@@ -31,3 +31,19 @@ function audit_log_entity_delete(EntityInterface $entity) {
   $audit_event = AuditLogEvent::create(\Drupal::getContainer(), 'entity.delete', $entity);
   \Drupal::service('audit_log.logger')->log($audit_event);
 }
+
+/**
+ * Implements hook_user_login().
+ */
+function audit_log_user_login($account) {
+  $audit_event = AuditLogEvent::create(\Drupal::getContainer(), 'user.login', $account);
+  \Drupal::service('audit_log.logger')->log($audit_event);
+}
+
+/**
+ * Implements hook_user_logout().
+ */
+function audit_log_user_logout($account) {
+  $audit_event = AuditLogEvent::create(\Drupal::getContainer(), 'user.logout', $account);
+  \Drupal::service('audit_log.logger')->log($audit_event);
+}

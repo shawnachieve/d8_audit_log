@@ -55,7 +55,7 @@ class DataFormatterManager extends DefaultPluginManager {
       foreach ($items as $type_name => $plugin_name) {
         if ($object instanceof $type_name) {
           $match = $plugin_name;
-          break;
+          break 2;
         }
       }
     }
