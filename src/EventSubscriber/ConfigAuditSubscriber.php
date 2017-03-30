@@ -39,10 +39,7 @@ class ConfigAuditSubscriber implements EventSubscriberInterface {
    *   The name of the event.
    */
   public function onConfigCrud(ConfigCrudEvent $event, $event_name) {
-    $args = func_get_args();
     $config = $event->getConfig();
-    $orig_data = $config->getOriginal();
-    $new_data = $config->getRawData();
     $config_name = $config->getName();
     drupal_set_message("$event_name : Config changed: " . $config_name);
 
@@ -59,7 +56,6 @@ class ConfigAuditSubscriber implements EventSubscriberInterface {
    *   The name of the event.
    */
   public function onConfigImport(ConfigImporterEvent $event, $event_name) {
-    $args = func_get_args();
     drupal_set_message("$event_name : Config import: ");
     $audit_event = AuditLogEvent::create(\Drupal::getContainer(), $event_name, $event);
     \Drupal::service('audit_log.logger')->log($audit_event);
@@ -74,7 +70,6 @@ class ConfigAuditSubscriber implements EventSubscriberInterface {
    *   The name of the event.
    */
   public function onCollectionInfo(ConfigCollectionInfo $event, $event_name) {
-    $args = func_get_args();
     drupal_set_message("$event_name : Config import-Collection Info: ");
     $audit_event = AuditLogEvent::create(\Drupal::getContainer(), $event_name, $event);
     \Drupal::service('audit_log.logger')->log($audit_event);

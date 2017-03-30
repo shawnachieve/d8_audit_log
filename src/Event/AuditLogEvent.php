@@ -118,10 +118,10 @@ class AuditLogEvent implements AuditLogEventInterface {
    *   The object being audited.
    * @param string $hostname
    *   The hostname of the user making the change.
-   * @param string $referrer
+   * @param string $location
    *   The URL of the page generating the event.
    */
-  protected function __construct($event_type, AccountInterface $account, $source, $hostname, $referrer) {
+  protected function __construct($event_type, AccountInterface $account, $source, $hostname, $location) {
     $this->eventType = $event_type;
     $this->account = $account;
     $this->accountUsername = $account->getAccountName();
@@ -129,7 +129,7 @@ class AuditLogEvent implements AuditLogEventInterface {
     $this->accountId = $account->id();
     $this->object = $source;
     $this->hostname = $hostname;
-    $this->location = $referrer;
+    $this->location = $location;
   }
 
   /**
@@ -142,8 +142,19 @@ class AuditLogEvent implements AuditLogEventInterface {
     $account = \Drupal::currentUser()->getAccount();
     $client_ip = \Drupal::request()->getClientIp();
     $hostname = Unicode::substr($client_ip, 0, 128);
-    $referrer = \Drupal::request()->getUri();
-    return new static($event_type, $account, $event_data, $hostname, $referrer);
+    $is_drush_request = (php_sapi_name() == 'cli');
+    if ($is_drush_request && isset($GLOBALS['argv'])) {
+      $drush_args = $GLOBALS['argv'];
+      $location = implode(' ', $drush_args);
+      if (isset($_SERVER['USER'])) {
+        $shell_user = $_SERVER['USER'];
+        $location = '[Run As: ' . $shell_user . '] ' . $location;
+      }
+    }
+    else {
+      $location = \Drupal::request()->getUri();
+    }
+    return new static($event_type, $account, $event_data, $hostname, $location);
   }
 
   /**

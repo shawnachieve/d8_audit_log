@@ -27,16 +27,39 @@ class ConfigBase implements DataFormatterInterface {
     }
 
     $event_type = $event->getEventType();
+    $orig_data = $config->getOriginal();
+    $new_data = $config->getRawData();
 
-    $message = 'Config (@name) event: @event_type';
+    $subtype = '';
+    switch ($config->getName()) {
+      case 'core.extension':
+        $diff = array_diff_assoc($orig_data['module'], $new_data['module']);
+        $subtype = 'module.install';
+        if (stripos($event->getLocation(), '/admin/modules/uninstall/confirm') !== FALSE) {
+          $subtype = 'module.uninstall';
+        }
+        elseif (stripos($event->getLocation(), '/drush') !== FALSE) {
+          if (stripos($event->getLocation(), ' pm-uninstall ') !== FALSE
+            || stripos($event->getLocation(), ' pmu ') !== FALSE) {
+            $subtype = 'module.uninstall';
+          }
+        }
+        break;
+
+      default:
+        $diff = array_diff_assoc($orig_data, $new_data);
+    }
+
+    // TODO: Need separate formatters based on the config object.
+    $message = 'Config (@name) event: @event_type changes: @diff';
     $args = [
       '@name' => $config->getName(),
       '@event_type' => $event_type,
+      '@diff' => print_r($diff, TRUE),
     ];
 
     $id = $config->getName();
     $type = $config->getName();
-    $subtype = '';
 
     $event->setMessage($message, $args);
     $event->setObjectData($id, $type, $subtype);
