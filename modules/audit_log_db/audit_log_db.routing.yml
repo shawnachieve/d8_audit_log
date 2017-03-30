@@ -1,0 +1,7 @@
+audit_log_db.detail:
+  path: '/admin/reports/audit-log-report/{id}'
+  defaults:
+    _controller: '\Drupal\audit_log_db\Controller\AuditLogDbController::eventDetails'
+    _title: 'Details'
+  requirements:
+    _permission: 'access audit_log report'
