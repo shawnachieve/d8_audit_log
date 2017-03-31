@@ -5,7 +5,6 @@ namespace Drupal\audit_log_db\Plugin\StorageBackend;
 use Drupal\audit_log\Event\AuditLogEventInterface;
 use Drupal\audit_log\Plugin\StorageBackend\StorageBackendInterface;
 use Drupal\Component\Plugin\PluginBase;
-use PDOException;
 
 /**
  * Writes audit events to a custom database table.
@@ -23,8 +22,16 @@ class Database extends PluginBase implements StorageBackendInterface {
    * {@inheritdoc}
    */
   public function save(AuditLogEventInterface $event) {
+    // This check is a workaround so that we do not try to log events
+    // while this module is being installed or uninstalled.
+    $installed = \Drupal::state()->get('audit_log_db_installed');
+    if ($installed !== TRUE) {
+      return;
+    }
+
     $connection = \Drupal::database();
     if (!$connection->schema()->tableExists('audit_log')) {
+      drupal_set_message('audit_log table does not exist', 'error');
       return;
     }
 

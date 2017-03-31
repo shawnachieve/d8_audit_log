@@ -48,7 +48,7 @@ function audit_log_db_views_data() {
       'id' => 'string',
     ],
     'filter' => [
-      'id' => 'string',
+      'id' => 'audit_log_db_values',
     ],
     'sort' => [
       'id' => 'standard',
@@ -65,7 +65,7 @@ function audit_log_db_views_data() {
       'id' => 'string',
     ],
     'filter' => [
-      'id' => 'string',
+      'id' => 'audit_log_db_values',
     ],
     'sort' => [
       'id' => 'standard',
@@ -82,7 +82,7 @@ function audit_log_db_views_data() {
       'id' => 'string',
     ],
     'filter' => [
-      'id' => 'string',
+      'id' => 'audit_log_db_values',
     ],
     'sort' => [
       'id' => 'standard',

@@ -12,7 +12,11 @@ use Drupal\Core\Entity\EntityInterface;
  * Implements hook_entity_update().
  */
 function audit_log_entity_update(EntityInterface $entity) {
-  $audit_event = AuditLogEvent::create(\Drupal::getContainer(), 'entity.update', $entity);
+  $audit_event = AuditLogEvent::create(
+    \Drupal::getContainer(),
+    'entity.update',
+    $entity
+  );
   \Drupal::service('audit_log.logger')->log($audit_event);
 }
 
@@ -20,7 +24,11 @@ function audit_log_entity_update(EntityInterface $entity) {
  * Implements hook_entity_insert().
  */
 function audit_log_entity_insert(EntityInterface $entity) {
-  $audit_event = AuditLogEvent::create(\Drupal::getContainer(), 'entity.insert', $entity);
+  $audit_event = AuditLogEvent::create(
+    \Drupal::getContainer(),
+    'entity.insert',
+    $entity
+  );
   \Drupal::service('audit_log.logger')->log($audit_event);
 }
 
@@ -28,7 +36,11 @@ function audit_log_entity_insert(EntityInterface $entity) {
  * Implements hook_entity_delete().
  */
 function audit_log_entity_delete(EntityInterface $entity) {
-  $audit_event = AuditLogEvent::create(\Drupal::getContainer(), 'entity.delete', $entity);
+  $audit_event = AuditLogEvent::create(
+    \Drupal::getContainer(),
+    'entity.delete',
+    $entity
+  );
   \Drupal::service('audit_log.logger')->log($audit_event);
 }
 
@@ -36,7 +48,11 @@ function audit_log_entity_delete(EntityInterface $entity) {
  * Implements hook_user_login().
  */
 function audit_log_user_login($account) {
-  $audit_event = AuditLogEvent::create(\Drupal::getContainer(), 'user.login', $account);
+  $audit_event = AuditLogEvent::create(
+    \Drupal::getContainer(),
+    'user.login',
+    $account
+  );
   \Drupal::service('audit_log.logger')->log($audit_event);
 }
 
@@ -44,6 +60,10 @@ function audit_log_user_login($account) {
  * Implements hook_user_logout().
  */
 function audit_log_user_logout($account) {
-  $audit_event = AuditLogEvent::create(\Drupal::getContainer(), 'user.logout', $account);
+  $audit_event = AuditLogEvent::create(
+    \Drupal::getContainer(),
+    'user.logout',
+    $account
+  );
   \Drupal::service('audit_log.logger')->log($audit_event);
 }

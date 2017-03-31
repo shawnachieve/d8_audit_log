@@ -545,7 +545,274 @@ display:
           empty_zero: false
           hide_alter_empty: true
           plugin_id: standard
-      filters: {  }
+        hostname:
+          id: hostname
+          table: audit_log
+          field: hostname
+          relationship: none
+          group_type: group
+          admin_label: ''
+          label: Hostname
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          plugin_id: standard
+      filters:
+        event_type:
+          id: event_type
+          table: audit_log
+          field: event_type
+          relationship: none
+          group_type: group
+          admin_label: ''
+          operator: in
+          value: {  }
+          group: 1
+          exposed: true
+          expose:
+            operator_id: event_type_op
+            label: 'Event Type'
+            description: ''
+            use_operator: false
+            operator: event_type_op
+            identifier: event_type
+            required: false
+            remember: false
+            multiple: true
+            remember_roles:
+              authenticated: authenticated
+              anonymous: '0'
+              administrator: '0'
+              bw_sys_admin: '0'
+              client_admin_1: '0'
+              client_admin_2: '0'
+              client_admin_3: '0'
+              site_reporter: '0'
+            reduce: false
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+          plugin_id: audit_log_db_values
+        object_type:
+          id: object_type
+          table: audit_log
+          field: object_type
+          relationship: none
+          group_type: group
+          admin_label: ''
+          operator: in
+          value: {  }
+          group: 1
+          exposed: true
+          expose:
+            operator_id: object_type_op
+            label: 'Object Type'
+            description: ''
+            use_operator: false
+            operator: object_type_op
+            identifier: object_type
+            required: false
+            remember: false
+            multiple: true
+            remember_roles:
+              authenticated: authenticated
+              anonymous: '0'
+              administrator: '0'
+              bw_sys_admin: '0'
+              client_admin_1: '0'
+              client_admin_2: '0'
+              client_admin_3: '0'
+              site_reporter: '0'
+            reduce: false
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+          plugin_id: audit_log_db_values
+        object_subtype:
+          id: object_subtype
+          table: audit_log
+          field: object_subtype
+          relationship: none
+          group_type: group
+          admin_label: ''
+          operator: in
+          value: {  }
+          group: 1
+          exposed: true
+          expose:
+            operator_id: object_subtype_op
+            label: 'Object SubType'
+            description: ''
+            use_operator: false
+            operator: object_subtype_op
+            identifier: object_subtype
+            required: false
+            remember: false
+            multiple: true
+            remember_roles:
+              authenticated: authenticated
+              anonymous: '0'
+              administrator: '0'
+              bw_sys_admin: '0'
+              client_admin_1: '0'
+              client_admin_2: '0'
+              client_admin_3: '0'
+              site_reporter: '0'
+            reduce: false
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+          plugin_id: audit_log_db_values
+        user_name:
+          id: user_name
+          table: audit_log
+          field: user_name
+          relationship: none
+          group_type: group
+          admin_label: ''
+          operator: '='
+          value: ''
+          group: 1
+          exposed: true
+          expose:
+            operator_id: user_name_op
+            label: 'User: Name'
+            description: ''
+            use_operator: false
+            operator: user_name_op
+            identifier: user_name
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+              anonymous: '0'
+              administrator: '0'
+              bw_sys_admin: '0'
+              client_admin_1: '0'
+              client_admin_2: '0'
+              client_admin_3: '0'
+              site_reporter: '0'
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+          plugin_id: string
+        hostname:
+          id: hostname
+          table: audit_log
+          field: hostname
+          relationship: none
+          group_type: group
+          admin_label: ''
+          operator: contains
+          value: ''
+          group: 1
+          exposed: true
+          expose:
+            operator_id: hostname_op
+            label: Hostname
+            description: ''
+            use_operator: false
+            operator: hostname_op
+            identifier: hostname
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+              anonymous: '0'
+              administrator: '0'
+              bw_sys_admin: '0'
+              client_admin_1: '0'
+              client_admin_2: '0'
+              client_admin_3: '0'
+              site_reporter: '0'
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+          plugin_id: string
       sorts:
         timestamp:
           id: timestamp
@@ -590,10 +857,15 @@ display:
       arguments: {  }
       display_extenders: {  }
       show_admin_links: false
+      filter_groups:
+        operator: AND
+        groups:
+          1: AND
     cache_metadata:
       max-age: 0
       contexts:
         - 'languages:language_interface'
+        - url
         - url.query_args
         - user.permissions
       tags: {  }
@@ -618,6 +890,7 @@ display:
       max-age: 0
       contexts:
         - 'languages:language_interface'
+        - url
         - url.query_args
         - user.permissions
       tags: {  }

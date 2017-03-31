@@ -2,8 +2,6 @@
 
 namespace Drupal\audit_log_db\Controller;
 
-use Drupal\Component\Utility\Html;
-use Drupal\Component\Utility\Unicode;
 use Drupal\Component\Utility\Xss;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Database\Connection;
@@ -11,10 +9,7 @@ use Drupal\Core\Datetime\DateFormatterInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Form\FormBuilderInterface;
 use Drupal\Core\Link;
-use Drupal\Core\Logger\RfcLogLevel;
 use Drupal\Core\Url;
-use Drupal\Core\Utility\LinkGeneratorInterface;
-use Drupal\user\Entity\User;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -46,12 +41,17 @@ class AuditLogDbController extends ControllerBase {
    * @param \Drupal\Core\Form\FormBuilderInterface $form_builder
    *   The form builder service.
    */
-  public function __construct(Connection $database, ModuleHandlerInterface $module_handler, DateFormatterInterface $date_formatter, FormBuilderInterface $form_builder) {
+  public function __construct(
+    Connection $database,
+    ModuleHandlerInterface $module_handler,
+    DateFormatterInterface $date_formatter,
+    FormBuilderInterface $form_builder
+  ) {
     $this->database = $database;
     $this->moduleHandler = $module_handler;
     $this->dateFormatter = $date_formatter;
     $this->formBuilder = $form_builder;
-    $this->userStorage = $this->entityManager()->getStorage('user');
+    $this->userStorage = $this->entityTypeManager()->getStorage('user');
   }
 
   /**
@@ -73,13 +73,31 @@ class AuditLogDbController extends ControllerBase {
       ->execute()
       ->fetchObject();
 
-    $user_link = new Link($log->user_name, Url::fromUserInput('/user/' . $log->user_id));
-
     if ($log) {
+      if ($log->user_id > 0) {
+        $user_link = Link::fromTextAndUrl(
+          $log->user_name,
+          Url::fromUserInput('/user/' . $log->user_id)
+        );
+      }
+      else {
+        $user_link = $log->user_name;
+      }
+
+      if (stripos($log->location, 'http') === 0) {
+        $location = Link::fromTextAndUrl(
+          $log->location,
+          Url::fromUri($log->location)
+        );
+      }
+      else {
+        $location = $log->location;
+      }
+
       $rows = [
         [
           ['data' => $this->t('Event Type'), 'header => TRUE'],
-          $this->t($log->event_type),
+          $log->event_type,
         ],
         [
           ['data' => $this->t('Date'), 'header => TRUE'],
@@ -107,12 +125,7 @@ class AuditLogDbController extends ControllerBase {
         ],
         [
           ['data' => $this->t('Location'), 'header => TRUE'],
-          $this->l(
-            $log->location,
-              $log->location ?
-                Url::fromUri($log->location) :
-                Url::fromRoute('<none>')
-          ),
+          $location,
         ],
         [
           ['data' => $this->t('Hostname'), 'header => TRUE'],
@@ -153,7 +166,10 @@ class AuditLogDbController extends ControllerBase {
         $message = Xss::filterAdmin($row->message);
       }
       elseif (!is_array($variables)) {
-        $message = $this->t('Log data is corrupted and cannot be unserialized: @message', ['@message' => Xss::filterAdmin($row->message)]);
+        $message = $this->t(
+          'Log data is corrupted and cannot be unserialized: 
+          @message', ['@message' => Xss::filterAdmin($row->message)]
+        );
       }
       // Message to translate with injected variables.
       else {
@@ -166,4 +182,5 @@ class AuditLogDbController extends ControllerBase {
 
     return $message;
   }
+
 }

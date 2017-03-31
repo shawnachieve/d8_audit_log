@@ -95,10 +95,29 @@ function audit_log_db_schema() {
     ],
     'primary key' => ['id'],
     'indexes' => [
-      'user_id' => ['user_id'],
+      'event_type' => ['event_type'],
+      'object_type' => ['object_type'],
+      'object_subtype' => ['object_subtype'],
       'object_id' => ['object_id'],
+      'timestamp' => ['timestamp'],
+      'hostname' => ['hostname'],
+      'user_name' => ['user_name'],
     ],
   ];
 
   return $schema;
+}
+
+/**
+ * Implements hook_install().
+ */
+function audit_log_db_install() {
+  \Drupal::state()->set('audit_log_db_installed', TRUE);
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function audit_log_db_uninstall() {
+  \Drupal::state()->delete('audit_log_db_installed');
 }

@@ -47,8 +47,25 @@ class AuditLogEvent implements AuditLogEventInterface {
    */
   protected $object;
 
+  /**
+   * The ID of the object being audited.
+   *
+   * @var string
+   */
   protected $objectId;
+
+  /**
+   * The type of object being audited.
+   *
+   * @var string
+   */
   protected $objectType;
+
+  /**
+   * The subtype or bundle of object being audited.
+   *
+   * @var string
+   */
   protected $objectSubType;
 
   /**
@@ -134,23 +151,44 @@ class AuditLogEvent implements AuditLogEventInterface {
    *   The hostname of the user making the change.
    * @param string $location
    *   The URL of the page generating the event.
+   * @param bool $cli
+   *   Indicates if this event was triggered via drush or other CLI tool.
    */
-  protected function __construct($event_type, AccountInterface $account, $source, $hostname, $location, $cli = FALSE) {
+  protected function __construct(
+    $event_type,
+    AccountInterface $account,
+    $source,
+    $hostname,
+    $location,
+    $cli = FALSE
+  ) {
     $this->eventType = $event_type;
     $this->account = $account;
-    $this->accountUsername = $account->getAccountName();
-    $this->accountMail = $account->getEmail();
-    $this->accountId = $account->id();
     $this->object = $source;
     $this->hostname = $hostname;
     $this->location = $location;
     $this->cli = $cli;
+
+    if ($cli && (empty($account) || empty($account->getAccountName()))) {
+      $this->accountUsername = 'CLI';
+      $this->accountId = 0;
+      $this->accountMail = '';
+    }
+    else {
+      $this->accountUsername = $account->getAccountName();
+      $this->accountMail = $account->getEmail();
+      $this->accountId = $account->id();
+    }
   }
 
   /**
    * {@inheritdoc}
    */
-  public static function create(ContainerInterface $container, $event_type, $event_data) {
+  public static function create(
+    ContainerInterface $container,
+    $event_type,
+    $event_data
+  ) {
     if (!\Drupal::hasContainer()) {
       \Drupal::setContainer($container);
     }
@@ -171,7 +209,14 @@ class AuditLogEvent implements AuditLogEventInterface {
     else {
       $location = \Drupal::request()->getUri();
     }
-    return new static($event_type, $account, $event_data, $hostname, $location, $cli);
+    return new static(
+      $event_type,
+        $account,
+        $event_data,
+        $hostname,
+        $location,
+        $cli
+    );
   }
 
   /**

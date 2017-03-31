@@ -15,7 +15,7 @@ use Drupal\user\Entity\User as UserEntity;
  *   weight = 50,
  * )
  */
-class User implements DataFormatterInterface {
+class User extends Entity {
 
   /**
    * {@inheritdoc}
@@ -23,15 +23,25 @@ class User implements DataFormatterInterface {
   public function format(AuditLogEventInterface $event) {
     $entity = $event->getObject();
     if (!($entity instanceof UserEntity)) {
-      throw new \InvalidArgumentException("Event object must be an instance of User.");
+      throw new \InvalidArgumentException(
+        'Event object must be an instance of User.'
+      );
+    }
+
+    // Skip processing if there are no changes.
+    $diff = $this->getChanges($entity);
+    if (empty($diff)) {
+      $event->abortLogging();
+      return;
     }
 
     $event_type = $event->getEventType();
 
-    $message = '@event_type: @name';
+    $message = '@event_type: @name; Changes: @diff';
     $args = [
       '@name' => $entity->label(),
       '@event_type' => $event_type,
+      '@diff' => print_r($diff, TRUE),
     ];
 
     $id = $entity->id();

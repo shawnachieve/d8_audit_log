@@ -7,3 +7,23 @@ views.field.audit_log_db_message:
     replace_variables:
       type: boolean
       label: 'Replace variables'
+views.filter.audit_log_db_values:
+  type: views_filter
+  label: 'Distinct DB Values'
+  mapping:
+    operator:
+      type: string
+      label: 'Operator'
+    value:
+      type: sequence
+      label: 'Values'
+      sequence:
+        type: string
+        label: 'Value'
+    expose:
+      type: mapping
+      label: 'Expose'
+      mapping:
+        reduce:
+          type: boolean
+          label: 'Reduce'

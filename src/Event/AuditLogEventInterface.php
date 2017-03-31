@@ -24,7 +24,11 @@ interface AuditLogEventInterface {
    * @return AuditLogEventInterface
    *   An instance of the event.
    */
-  public static function create(ContainerInterface $container, $event_type, $event_data);
+  public static function create(
+    ContainerInterface $container,
+    $event_type,
+    $event_data
+  );
 
   /**
    * Flag this event as not-logged.
@@ -148,6 +152,7 @@ interface AuditLogEventInterface {
    * The timestamp for when the event was initiated.
    *
    * @return int
+   *   The timestamp of the event.
    */
   public function getRequestTime();
 
@@ -191,7 +196,7 @@ interface AuditLogEventInterface {
    * @param array $variables
    *   An array of replacement tokens for the log message.
    *
-   * @return \Drupal\audit_log\AuditLogEventInterface
+   * @return \Drupal\audit_log\Event\AuditLogEventInterface
    *   The current instance of the event object.
    */
   public function setMessage($message, array $variables);
@@ -206,7 +211,7 @@ interface AuditLogEventInterface {
    * @param string $subtype
    *   The subtype or bundle for the object such as 'article'.
    *
-   * @return \Drupal\audit_log\AuditLogEventInterface
+   * @return \Drupal\audit_log\Event\AuditLogEventInterface
    *   The current instance of the event object.
    */
   public function setObjectData($id, $type, $subtype = '');

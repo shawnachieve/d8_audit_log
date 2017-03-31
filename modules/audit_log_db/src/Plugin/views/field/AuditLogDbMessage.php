@@ -2,7 +2,7 @@
 
 namespace Drupal\audit_log_db\Plugin\views\field;
 
-use Drupal\Component\Utility\SafeMarkup;
+use Drupal\Component\Render\FormattableMarkup;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\views\Plugin\views\field\FieldPluginBase;
 use Drupal\views\ResultRow;
@@ -21,7 +21,11 @@ class AuditLogDbMessage extends FieldPluginBase {
   /**
    * {@inheritdoc}
    */
-  public function init(ViewExecutable $view, DisplayPluginBase $display, array &$options = NULL) {
+  public function init(
+    ViewExecutable $view,
+    DisplayPluginBase $display,
+    array &$options = NULL
+  ) {
     parent::init($view, $display, $options);
 
     if ($this->options['replace_variables']) {
@@ -60,7 +64,8 @@ class AuditLogDbMessage extends FieldPluginBase {
 
     if ($this->options['replace_variables']) {
       $variables = unserialize($this->getvalue($values, 'variables'));
-      return SafeMarkup::format($value, (array) $variables);
+      $markup = new FormattableMarkup($value, (array) $variables);
+      return $markup;
     }
     else {
       return $this->sanitizeValue($value);
