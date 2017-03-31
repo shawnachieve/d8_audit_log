@@ -24,6 +24,9 @@ class Database extends PluginBase implements StorageBackendInterface {
    */
   public function save(AuditLogEventInterface $event) {
     $connection = \Drupal::database();
+    if (!$connection->schema()->tableExists('audit_log')) {
+      return;
+    }
 
     $connection
       ->insert('audit_log')
